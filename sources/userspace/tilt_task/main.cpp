@@ -3,7 +3,6 @@
 #include <stdmutex.h>
 
 #include <drivers/gpio.h>
-#include <process/process_manager.h>
 
 /**
  * Tilt task

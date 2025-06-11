@@ -104,6 +104,19 @@ NSWI_Result_Code wait(uint32_t file, uint32_t count, uint32_t notified_deadline)
     return retcode;
 }
 
+uint32_t wait_multiple(uint32_t files, uint32_t count, uint32_t notified_deadline)
+{
+    uint32_t file_id;
+
+    asm volatile("mov r0, %0" : : "r" (files));
+    asm volatile("mov r1, %0" : : "r" (count));
+    asm volatile("mov r2, %0" : : "r" (notified_deadline));
+    asm volatile("swi 71");
+    asm volatile("mov %0, r0" : "=r" (file_id));
+
+    return file_id;
+}
+
 bool sleep(uint32_t ticks, uint32_t notified_deadline)
 {
     uint32_t retcode;

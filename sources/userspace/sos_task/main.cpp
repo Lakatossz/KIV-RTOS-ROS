@@ -3,9 +3,16 @@
 #include <stdmutex.h>
 
 #include <drivers/gpio.h>
-#include <process/process_manager.h>
 
-#include <oled.h>
+#include <air_in_line.h>
+#include <wdt.h>
+#include <monitor.h>
+#include <motor.h>
+#include <cgm.h>
+#include <battery_system.h>
+#include <rtc.h>
+#include <pressure.h>
+#include <temperature.h>
 
 /**
  * SOS blinker task
@@ -13,69 +20,47 @@
  * Ceka na stisk tlacitka, po stisku vyblika LEDkou "SOS" signal
  **/
 
-constexpr uint32_t symbol_tick_delay = 0x400;
-constexpr uint32_t char_tick_delay = 0x1000;
-
-uint32_t sos_led;
-uint32_t button;
-
-void blink(bool short_blink)
-{
-	write(sos_led, "1", 1);
-	sleep(short_blink ? 0x800 : 0x1000);
-	write(sos_led, "0", 1);
-}
-
 int main(int argc, char** argv)
 {
-	sos_led = open("DEV:gpio/18", NFile_Open_Mode::Write_Only);
-	button = open("DEV:gpio/16", NFile_Open_Mode::Read_Only);
+	//Insulin_Pump insulin_pump = Insulin_Pump();
 
-	NGPIO_Interrupt_Type irtype = NGPIO_Interrupt_Type::Rising_Edge;
-	ioctl(button, NIOCtl_Operation::Enable_Event_Detection, &irtype);
+	//insulin_pump.Initialize();
 
-	uint32_t logpipe = pipe("log", 32);
+	//return insulin_pump.Run();
 
-	while (true)
-	{
-		// pockame na stisk klavesy
-		wait(button, 1, 0x300);
+	//Insulin_Pump insulin_pump();
 
-		// tady by se mohla hodit inverze priorit:
-		// 1) pipe je plna
-		// 2) my mame deadline 0x300
-		// 3) log task ma deadline 0x1000
-		// 4) jiny task ma deadline 0x500
-		// jiny task dostane prednost pred log taskem, a pokud nesplni v kratkem case svou ulohu, tento task prekroci deadline
-		// TODO: inverzi priorit bychom docasne zvysili prioritu (zkratili deadline) log tasku, aby vyprazdnil pipe a my se mohli odblokovat co nejdrive
-		write(logpipe, "SOS!", 5);
+	//CMonitor monitor("DEV:monitor");
+	//monitor.Clear();
 
-		blink(true);
-		sleep(symbol_tick_delay);
-		blink(true);
-		sleep(symbol_tick_delay);
-		blink(true);
+	//CTemperature temp("DEV:temp");
 
-		sleep(char_tick_delay);
+	//CAir_In_Line ail("DEV:ail");
+	//CWdt wdt("DEV:wdt");
 
-		blink(false);
-		sleep(symbol_tick_delay);
-		blink(false);
-		sleep(symbol_tick_delay);
-		blink(false);
-		sleep(symbol_tick_delay);
+	//CMotor motor("DEV:motor");
 
-		sleep(char_tick_delay);
+	//CCgm cgm("DEV:cgm");
 
-		blink(true);
-		sleep(symbol_tick_delay);
-		blink(true);
-		sleep(symbol_tick_delay);
-		blink(true);
-	}
+	//CBattery_System battery("DEV:battery");
+	//CRtc rtc("DEV:rtc");
+	//CPressure pressure("DEV:press");
 
-	close(button);
-	close(sos_led);
+	//while (true)
+	//{
+	//float current_cgm = 5.0f;
+	//cgm.Read(current_cgm);
+
+		//uint32_t current_time = rtc.Read();
+		//uint32_t current_press = pressure.Read();
+		//uint32_t current_charge = battery.Get_Charge();
+
+		//uint32_t temperature = temp.Read();
+		//motor.Move_Forward(10);
+		//motor.Move_Backward(5);
+		//monitor.Put("Pred\n", strlen("Pred\n"));
+		//wdt.Barked();
+	//}
 
     return 0;
 }

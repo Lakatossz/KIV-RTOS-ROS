@@ -1,0 +1,110 @@
+{
+  "reset_pin": [
+    {
+      "connection": [ 23 ]
+    }
+  ],
+  "peripherals": [
+    {
+      "name": "CGM Sensor",
+      "connection": [ 3, 2, 120 ],
+      "comment": "connection: [SCL, SDA, I2C addr]",
+      "lib_dir": "peripherals",
+      "lib_name": "cgm"
+    },
+    {
+      "name": "A810 Bubble Sensor",
+      "connection": [ 26 ],
+      "lib_dir": "peripherals",
+      "lib_name": "a810_bubble_sensor"
+    },
+    {
+      "name": "DHT11 Temperature Sensor",
+      "connection": [ 27 ],
+      "lib_dir": "peripherals",
+      "lib_name": "dht11"
+    },
+    {
+      "name": "MAX6864 WDT",
+      "connection": [ 23, 24, 23 ],
+      "lib_dir": "peripherals",
+      "lib_name": "max6864"
+    },
+    {
+      "name": "MG996R Servo Motor",
+      "connection": [ 3, 2, 20 ],
+      "comment": "connection: [SCL, SDA, I2C addr]",
+      "lib_dir": "peripherals",
+      "lib_name": "pca9685_mg996r"
+    },
+    {
+      "name": "Pressure Sensor",
+      "connection": [ 3, 2, 40 ],
+      "lib_dir": "peripherals",
+      "lib_name": "ads1115_pbmh"
+    },
+    {
+      "name": "BQ25120A Battery system",
+      "connection": [ 3, 2, 107 ],
+      "comment": "connection: [SCL, SDA, I2C addr]",
+      "lib_dir": "peripherals",
+      "lib_name": "bq25120a"
+    },
+    {
+      "name": "DS3231 RTC",
+      "connection": [ 3, 2, 104 ],
+      "comment": "connection: [SCL, SDA, I2C addr]",
+      "lib_dir": "peripherals",
+      "lib_name": "ds3231"
+    },
+    {
+      "name": "UP",
+      "connection": [ 16 ],
+      "lib_dir": "peripherals",
+      "lib_name": "button"
+    },
+    {
+      "name": "DOWN",
+      "connection": [ 17 ],
+      "lib_dir": "peripherals",
+      "lib_name": "button"
+    },
+    {
+      "name": "NEXT",
+      "connection": [ 22 ],
+      "lib_dir": "peripherals",
+      "lib_name": "button"
+    },
+    {
+      "name": "OKAY",
+      "connection": [ 23 ],
+      "lib_dir": "peripherals",
+      "lib_name": "button"
+    },
+    {
+      "name": "WARINING",
+      "connection": [ 5 ],
+      "lib_dir": "peripherals",
+      "lib_name": "led"
+    },
+    {
+      "name": "ERROR",
+      "connection": [ 6 ],
+      "lib_dir": "peripherals",
+      "lib_name": "led"
+    },
+    {
+      "name": "CRITICAL ERROR",
+      "connection": [ 25 ],
+      "lib_dir": "peripherals",
+      "lib_name": "led"
+    },
+    {
+      "name": "SSD1306 OLED",
+      "connection": [ 3, 2, 60 ],
+      "comment": "connection: [SCL, SDA, address]",
+      "lib_dir": "peripherals",
+      "lib_name": "ssd1306_oled"
+    }
+  ]
+}

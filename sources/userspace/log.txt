@@ -1,0 +1,17 @@
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /mnt/c/users/rosaj/source/repos/KIV-RTOS/sources/userspace/build
+[ 23%] Built target init_task
+[ 40%] Built target counter_task
+[ 50%] Built target logger_task
+[ 57%] Built target sos_task
+[ 61%] Built target tilt_task
+[ 71%] Built target oled_task
+[ 73%] Building CXX object CMakeFiles/Emulated_IP.dir/src/main.cpp.obj
+[ 76%] Building CXX object CMakeFiles/Emulated_IP.dir/src/insulin_pump/pid_regulator/pid_regulator.cpp.obj
+[ 78%] Building CXX object CMakeFiles/Emulated_IP.dir/src/insulin_pump/basal/basal_profile.cpp.obj
+[ 80%] Building CXX object CMakeFiles/Emulated_IP.dir/src/insulin_pump/insulin_pump/insulin_pump.cpp.obj
+[ 83%] Building CXX object CMakeFiles/Emulated_IP.dir/src/insulin_pump/cgm_sensor/cgm_sensor.cpp.obj
+[ 85%] Building CXX object CMakeFiles/Emulated_IP.dir/src/insulin_pump/motor/motor.cpp.obj
+[ 88%] Building CXX object CMakeFiles/Emulated_IP.dir/src/insulin_pump/user_interface/console_user_interface.cpp.obj
+[ 90%] Building CXX object CMakeFiles/Emulated_IP.dir/src/insulin_pump/pump_settings/pump_settings.cpp.obj

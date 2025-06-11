@@ -6,6 +6,7 @@
 #include <stdstring.h>
 
 #include <drivers/uart.h>
+#include <drivers/monitor.h>
 
 CFilesystem sFilesystem;
 
@@ -203,6 +204,8 @@ uint32_t IFile::Notify(uint32_t count)
     uint32_t notified_count = 0;
     while (itr && notified_count < count)
     {
+        TTask_Struct* task = sProcessMgr.Get_Process_By_PID(itr->pid);
+        task->wakeup_source = this;
         sProcessMgr.Notify_Process(itr->pid);
 
         tmp = itr;

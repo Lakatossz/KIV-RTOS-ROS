@@ -1,6 +1,7 @@
 #pragma once
 
 #include <drivers/gpio.h>
+#include <drivers/monitor.h>
 #include <hal/peripherals.h>
 #include <memory/kernel_heap.h>
 #include <fs/filesystem.h>
@@ -88,9 +89,14 @@ class CGPIO_File final : public IFile
         {
             Wait_Enqueue_Current();
             sGPIO.Wait_For_Event(this, mPinNo);
-
-            // zablokujeme, probudi nas az notify 
-	        sProcessMgr.Block_Current_Process();
+            sProcessMgr.Block_Current_Process();
+            return true;
+        }
+        
+        virtual bool Wait_Multiply(uint32_t count) override
+        {
+            Wait_Enqueue_Current();
+            sGPIO.Wait_For_Event(this, mPinNo);
             return true;
         }
 };
@@ -131,6 +137,8 @@ class CGPIO_FS_Driver : public IFilesystem_Driver
             }
 
             CGPIO_File* f = new CGPIO_File(gpionum, mode == NFile_Open_Mode::Read_Only, mode == NFile_Open_Mode::Write_Only);
+
+            f->id = gpionum;
 
             return f;
         }

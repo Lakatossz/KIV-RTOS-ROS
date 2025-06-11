@@ -50,6 +50,13 @@ extern "C" void __attribute__((section(".initsys"))) __attribute__((noreturn)) _
             | DL1_Flags::Shareable;
     }
 
+    Page_Directory_Kernel[PT_Entry(0x30000000)] = 0x30000000
+        | DL1_Flags::Access_Type_Section_Address
+        | DL1_Flags::Domain_0
+        | DL1_Flags::Access_Privileged_RW_User_None
+        | DL1_Flags::TEX_001
+        | DL1_Flags::Shareable;
+
     // memory-mapped I/O pro periferie, necachovane (!), nebufferovane (!), RW jen pro privilegovany rezim (nechceme, aby nam uzivatelske procesy manipulovaly s HW primo)
     for (addr = hal::Peripheral_Base; addr < hal::Peripheral_Base + 0x01000000; addr += PT_Region_Size)
     {

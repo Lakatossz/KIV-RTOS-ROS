@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 mkdir -p build >/dev/null 2>&1
 cd build
 

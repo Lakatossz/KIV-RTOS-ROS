@@ -4,6 +4,7 @@
 #include <interrupt_controller.h>
 
 #include <stdstring.h>
+#include <drivers/monitor.h>
 
 CGPIO_Handler sGPIO(hal::GPIO_Base);
 
@@ -192,8 +193,8 @@ void CGPIO_Handler::Enable_Event_Detect(uint32_t pin, NGPIO_Interrupt_Type type)
 	uint32_t reg, bit;
 	if (!Get_GP_IRQ_Detect_Location(pin, type, reg, bit))
 		return;
-
-	mGPIO[reg] = (1 << bit);
+	
+	mGPIO[reg] += (1 << bit);
 
 	// TODO: vyresit tohle trochu lepe
 	sInterruptCtl.Enable_IRQ(hal::IRQ_Source::GPIO_0);
@@ -275,11 +276,12 @@ void CGPIO_Handler::Handle_IRQ()
 		if ((mGPIO[reg] >> bit) & 0x1)
 		{
 			spinlock_lock(&mLock);
-
+			int max_iter = 16;
 			// zkusime najit proces, ktery na udalost na tomto pinu ceka
 			wf = mWaiting_Files;
-			while (wf != nullptr)
+			while (wf != nullptr && max_iter > 0)
 			{
+				max_iter--;
 				if (wf->pin_idx == pin)
 				{
 					// probudime proces

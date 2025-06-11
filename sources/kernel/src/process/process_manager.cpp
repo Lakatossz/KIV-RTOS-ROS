@@ -11,6 +11,8 @@
 
 #include <drivers/uart.h>
 #include <drivers/timer.h>
+#include <drivers/monitor.h>
+#include <stdstring.h>
 
 // "importovane" funkce z asm
 extern "C"
@@ -378,10 +380,66 @@ void CProcess_Manager::Handle_Filesystem_SWI(NSWI_Filesystem_Service svc_idx, ui
             mCurrent_Task_Node->task->notified_deadline = r2;
 
             // nastavme deadline, kdyby Wait nahodou neblokoval
-            if (r2 != Deadline_Unchanged)
+            if (r2 != Deadline_Unchanged) {
                 mCurrent_Task_Node->task->deadline = r2;
+            }
+
+            //sMonitor << "r1: " << r0 << "\n";
+
+            //sMonitor << "Uspavam ve wait: " << target.r0 << "\n";
 
             target.r0 = mCurrent_Task_Node->task->opened_files[r0]->Wait(r1);
+
+            //sMonitor << "Probudil jsem se ve wait: " << target.r0 << "\n";
+
+            // v tento moment uz lze "budouci" deadline vymazat, uz je nastavena ve skutecne deadline bud shora nebo z notify kodu
+            mCurrent_Task_Node->task->notified_deadline = Deadline_Unchanged;
+            break;
+        }
+        // Tady nevim jaky files[i] odblokoval proces, jinak si myslim, ze by to mohlo fungovat
+        case NSWI_Filesystem_Service::Wait_Multiple:
+        {
+            //sMonitor << "Jsem ve NSWI_Filesystem_Service::Wait_Multiple\n";
+            uint32_t *files = reinterpret_cast<uint32_t*>(r0);
+            uint32_t count = r1;
+
+            for (uint32_t i = 0; i < count; ++i) {
+                if (files[i] > Max_Process_Opened_Files || !mCurrent_Task_Node->task->opened_files[files[i]])
+                    return;
+            }
+
+            mCurrent_Task_Node->task->notified_deadline = r2;
+
+            if (r2 != Deadline_Unchanged) {
+                mCurrent_Task_Node->task->deadline = r2;
+            }
+
+            //sMonitor << "count: " << count << "\n";
+
+            for (uint32_t i = 0; i < count; ++i) {
+                mCurrent_Task_Node->task->opened_files[files[i]]->Wait_Multiply(r2);
+                //sMonitor << "Uspavam: " << files[i] << "\n";
+            }
+
+            Block_Current_Process();
+
+            //sMonitor << "count: " << count << "\n";
+
+            for (uint32_t i = 0; i < count; ++i) {
+                //sMonitor << "wakeup_source ID: " << mCurrent_Task_Node->task->wakeup_source->id << "\n";
+                //sMonitor << "ID: " << files[i] << " \n";
+                if (mCurrent_Task_Node->task->opened_files[files[i]]->id == mCurrent_Task_Node->task->wakeup_source->id) {
+                    //sMonitor << "Probudil me: " << files[i] << "\n";
+                    target.r0 = files[i];
+                }
+            }
+
+            //sMonitor << "count: " << count << "\n";
+
+            for (uint32_t i = 0; i < count; ++i) {
+                mCurrent_Task_Node->task->opened_files[files[i]]->Notify(NotifyAll);
+                //sMonitor << "Notifikuju: " << files[i] << "\n";
+            }
 
             // v tento moment uz lze "budouci" deadline vymazat, uz je nastavena ve skutecne deadline bud shora nebo z notify kodu
             mCurrent_Task_Node->task->notified_deadline = Deadline_Unchanged;

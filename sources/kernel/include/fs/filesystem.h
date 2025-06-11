@@ -64,6 +64,9 @@ class IFile
         void Wait_Enqueue_Current();
 
     public:
+        uint32_t id = 0;
+
+    public:
         IFile(NFile_Type_Major type) : mType(type) { spinlock_init(&mWait_Lock); };
         virtual ~IFile() = default;
 
@@ -77,6 +80,9 @@ class IFile
         virtual bool IOCtl(NIOCtl_Operation dir, void* ctlptr) { return false; };
         // vycka na udalost nad timto souborem (specificke pro danou implementaci)
         virtual bool Wait(uint32_t count) { return true; };
+
+        // vycka na jakoukoliv udalost nad vice soubory
+        virtual bool Wait_Multiply(uint32_t count) { return true; };
 
         // notifikuje <count> cekajici nad timto souborem (pokud nejaky cekajici je)
         virtual uint32_t Notify(uint32_t count);

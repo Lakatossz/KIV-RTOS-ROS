@@ -29,6 +29,23 @@ bool COLED_Display::Is_Opened() const
     return mOpened;
 }
 
+bool COLED_Display::Test() const
+{
+    if (!mOpened)
+        return false;
+
+    // nehospodarny zpusob, jak nastavit pixely, ale pro ted staci
+    TDisplay_Draw_Pixel_Array_Packet pkt;
+    pkt.header.cmd = NDisplay_Command::Draw_Pixel_Array;
+    pkt.count = 1;
+    pkt.first.x = 0;
+    pkt.first.y = 0;
+    pkt.first.set = 0;
+    write(mHandle, reinterpret_cast<char*>(&pkt), sizeof(pkt));
+
+    return true;
+}
+
 void COLED_Display::Clear(bool clearSet)
 {
     if (!mOpened)

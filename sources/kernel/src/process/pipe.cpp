@@ -2,6 +2,7 @@
 #include <memory/kernel_heap.h>
 #include <process/process_manager.h>
 #include <process/resource_manager.h>
+#include <drivers/monitor.h>
 
 CPipe::CPipe()
     : IFile(NFile_Type_Major::Pipe)
@@ -130,6 +131,24 @@ bool CPipe::Wait(uint32_t count)
 
     return true;
 }
+
+bool CPipe::Wait_Multiply(uint32_t count)
+{
+    spinlock_lock(&mBuffer_Lock);
+
+    if (mSem_Busy->Get_Current_Count() >= count)
+    {
+        spinlock_unlock(&mBuffer_Lock);
+        return true;
+    }
+
+    Wait_Enqueue_Current();
+
+    spinlock_unlock(&mBuffer_Lock);
+
+    return true;
+}
+
 
 uint32_t CPipe::Notify(uint32_t count)
 {

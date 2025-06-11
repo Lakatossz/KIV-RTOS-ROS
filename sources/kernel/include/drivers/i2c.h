@@ -17,6 +17,8 @@ class CI2C_Transaction
         uint8_t mBuffer[I2C_Transaction_Max_Size];
         // delka dat
         uint32_t mLength = 0;
+        // pozice pro cteni
+        uint32_t mReadPos = 0;
         // cilova slave adresa
         uint16_t mAddress = 0;
 
@@ -37,6 +39,17 @@ class CI2C_Transaction
 
             mBuffer[mLength++] = static_cast<uint8_t>(chr);
 
+            return *this;
+        }
+
+        template<typename T>
+        CI2C_Transaction& operator>>(T& data) {
+            if (mReadPos >= mLength) {
+               return *this;
+            }
+
+            data = mBuffer[mReadPos];
+            mReadPos++;
             return *this;
         }
 };
@@ -81,7 +94,7 @@ class CI2C
         // zapocne novou transakci
         CI2C_Transaction& Begin_Transaction(uint16_t addr);
         // ukonci transakci
-        void End_Transaction(CI2C_Transaction& transaction, bool commit = true);
+        void End_Transaction(CI2C_Transaction& transaction, bool commit = true, bool readMode = false, uint32_t size = 0);
 };
 
 // TODO: I2C0 a 2

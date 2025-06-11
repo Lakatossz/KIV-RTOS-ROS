@@ -1,6 +1,7 @@
 #include <drivers/i2c.h>
 
 #include <drivers/gpio.h>
+#include <drivers/monitor.h>
 
 CI2C sI2C1(hal::BSC1_Base, 2, 3);
 
@@ -20,7 +21,7 @@ void CI2C::Wait_Ready()
     volatile uint32_t& s = Reg(hal::BSC_Reg::Status);
 
     // pockame, dokud nebude ve status registru zapnuty ready bit
-    while( !(s & (1 << 1)) )
+    while (!(s & (1 << 1)))
         ;
 }
 
@@ -98,29 +99,55 @@ CI2C_Transaction& CI2C::Begin_Transaction(uint16_t addr)
 
     mTransaction.mIn_Progress = true;
     mTransaction.mLength = 0;
+    mTransaction.mReadPos = 0;
     mTransaction.Set_Address(addr);
 
     return mTransaction;
 }
 
-void CI2C::End_Transaction(CI2C_Transaction& transaction, bool commit)
+void CI2C::End_Transaction(CI2C_Transaction& transaction, bool commit, bool readMode, uint32_t size)
 {
     if (!transaction.mIn_Progress)
         return;
 
     transaction.mIn_Progress = false;
-
-    if (!commit || transaction.mLength == 0)
-        return;
+    transaction.mLength = !readMode ? transaction.mLength : size;
 
     Reg(hal::BSC_Reg::Slave_Address) = transaction.mAddress;
     Reg(hal::BSC_Reg::Data_Length) = transaction.mLength;
 
-    for (volatile int i = 0; i < transaction.mLength; i++)
-        Reg(hal::BSC_Reg::Data_FIFO) = transaction.mBuffer[i];
+    if (readMode) // Režim ètení
+    {
+        // Nastavení registrù pro ètení
+        Reg(hal::BSC_Reg::Status) = (1 << 9) | (1 << 8) | (1 << 1);
+        Reg(hal::BSC_Reg::Control) = (1 << 15) | (1 << 7) | (1 << 4) | (1 << 0);
 
-    Reg(hal::BSC_Reg::Status) = (1 << 9) | (1 << 8) | (1 << 1); // reset "slave clock hold", "slave fail" a "status" bitu
-    Reg(hal::BSC_Reg::Control) = (1 << 15) | (1 << 7); // zapoceti noveho prenosu (enable bsc + start transfer)
+        Wait_Ready();
 
-    Wait_Ready();
+        // Ètení dat z FIFO do bufferu
+        for (volatile int i = 0; i < transaction.mLength; i++) {
+            transaction.mBuffer[i] = Reg(hal::BSC_Reg::Data_FIFO);
+            //sMonitor << "transaction.mBuffer[i]: " << static_cast<unsigned int>(transaction.mBuffer[i]) << " \n";
+        }
+
+        Reg(hal::BSC_Reg::Control) |= (1 << 4);
+    }
+    else // Režim zápisu
+    {
+        if (!commit || transaction.mLength == 0)
+            return;
+
+        Reg(hal::BSC_Reg::Control) |= (1 << 4);
+
+        // Zápis dat z bufferu do FIFO
+        for (volatile int i = 0; i < transaction.mLength; i++)
+            Reg(hal::BSC_Reg::Data_FIFO) = transaction.mBuffer[i];
+
+        Reg(hal::BSC_Reg::Status) = (1 << 9) | (1 << 8) | (1 << 1);
+        Reg(hal::BSC_Reg::Control) = (1 << 15) | (1 << 7);
+
+        Wait_Ready();
+
+        Reg(hal::BSC_Reg::Control) |= (1 << 4);
+    }
 }

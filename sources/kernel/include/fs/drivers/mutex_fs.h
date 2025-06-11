@@ -4,6 +4,7 @@
 #include <fs/filesystem.h>
 #include <process/mutex.h>
 #include <process/resource_manager.h>
+#include <drivers/monitor.h>
 
 // driver pro filesystem pro mutexy
 class CMutex_FS_Driver : public IFilesystem_Driver

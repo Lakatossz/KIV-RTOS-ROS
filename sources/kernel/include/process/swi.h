@@ -95,7 +95,11 @@ enum class NSWI_Filesystem_Service
     // Cekani na udalost nad souborem (nejaky zapis, notifikace, ...)
     // IN:  r0 = handle otevreneho souboru, r1 = pocet zdroju, r2 = nova deadline po probuzeni (nebo Deadline_Unchanged pokud se nema menit, nebo Indefinite pokud se ma zrusit)
     // OUT: r0 = indikator uspechu (NSWI_Result_Code)
-    Wait            = 6,
+    Wait           = 6,
+    // Cekani na udalost nad polem souboru (nejaky zapis, notifikace, ...)
+    // IN:  r0 = ukazatel na pole handlu otevrenych souboru, r1 = pocet zdroju, r2 = nova deadline po probuzeni (nebo Deadline_Unchanged pokud se nema menit, nebo Indefinite pokud se ma zrusit)
+    // OUT: r0 = indikator uspechu (NSWI_Result_Code)
+    Wait_Multiple = 7,
 };
 
 // mozne IOCtl operace nad souborem

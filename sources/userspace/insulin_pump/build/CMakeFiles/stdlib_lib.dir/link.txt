@@ -1,0 +1,2 @@
+/mnt/c/users/rosaj/source/repos/KIV-RTOS/sources/userspace/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-ar qc libstdlib_lib.a "CMakeFiles/stdlib_lib.dir/mnt/c/users/rosaj/source/repos/KIV-RTOS/sources/stdlib/src/stdfile.cpp.obj" "CMakeFiles/stdlib_lib.dir/mnt/c/users/rosaj/source/repos/KIV-RTOS/sources/stdlib/src/stdmutex.cpp.obj" "CMakeFiles/stdlib_lib.dir/mnt/c/users/rosaj/source/repos/KIV-RTOS/sources/stdlib/src/stdstring.cpp.obj"
+/mnt/c/users/rosaj/source/repos/KIV-RTOS/sources/userspace/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-ranlib libstdlib_lib.a
